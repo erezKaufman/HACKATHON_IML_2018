@@ -78,7 +78,7 @@ def create_permutations(k):
         for var in last_permutations:
             ret_list.append(var+'0')
             ret_list.append(var+'1')
-        return  ret_list
+        return  ret_list + last_permutations
 
 def create_features(raw_x_set,k):
     permutaions =  create_permutations(k)
@@ -87,12 +87,13 @@ def create_features(raw_x_set,k):
     for index, i in enumerate(permutaions):
         cur_count = 0
         for j in raw_x_set:
-            if j == i:
+            if i in j:
 
-                cur_count+=1
+                cur_count=1
             count_sums(index, j, sum_feature)
 
         permutaions_features.append(cur_count)
+
     return np.asarray(permutaions_features+sum_feature)
 
 def count_sums(index, j, sum_feature):
@@ -114,7 +115,7 @@ if __name__ == '__main__':
     print(x_train)
     # print(x_train.shape)
     # print(y_train.shape)
-    # features = create_features(x_train,5)
+    features = create_features(x_train,5)
     # create_dataFrame(x_train,features)
     # clf = MLPClassifier(solver='sgd',hidden_layer_sizes=(5,2))
     # clf.fit(x_train.astype('float64'),y_train.astype('float64'))
