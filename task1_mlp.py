@@ -1,6 +1,11 @@
 import numpy as np
 import sys
-import pandas as pd
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
+from keras.layers import Embedding
+from keras.layers import LSTM
+from keras.layers import Input, Dense
+from keras.models import Model
 
 from sklearn.neural_network import MLPClassifier
 
@@ -98,7 +103,7 @@ def create_features(raw_x_set,k):
 
             feature_mat[x_index][perm_index] = cur_count
     # print(permutaions_features)
-    return np.asarray(permutaions_features+sum_feature)
+    return feature_mat
 
 def count_sums(x_index, perm_index, j, feature_mat,perm_length):
     count = 0
@@ -118,8 +123,57 @@ if __name__ == '__main__':
     # print(x_train)
     # print(x_train.shape)
     # print(y_train.shape)
-    features = create_features(x_train,5)
+    feature_mat = create_features(x_train,5)
     # create_dataFrame(x_train,features)
     # clf = MLPClassifier(solver='sgd',hidden_layer_sizes=(5,2))
     # clf.fit(x_train.astype('float64'),y_train.astype('float64'))
 
+# LSTM
+def pred_action(x_test, n_pred, model):
+    y_hat = np.zeros((m, n_pred))
+    for i in range(n_pred):
+        y_hat[:, i] = round(model.predict(x_test))
+
+        x_test = np.append(x_test[:, 1:], y_hat[:,i], axis=1)
+
+    return y_hat
+
+max_features = 1024; m = x_test.shape[0]; n_pred = 20
+
+''' Create LSTM Network '''
+
+n_layers = 10; n_units = 30; d = feature_mat.shape[1]
+# model = Sequential(Dense(n_units, input_shape=(d,), activation='relu'))
+# for i in range(n_layers):
+#     model.add(Dense(n_units, activation='relu'))
+# model.add(Dense(1, activation='sigmoid'))
+#
+# model.compile(loss='binary_crossentropy',
+#               optimizer='rmsprop',
+#               metrics=['accuracy'])
+
+
+inputs = Input(shape=(d,))
+x=inputs
+for i in range(n_layers):
+    x = Dense(30, activation='relu')(x)
+outputs = Dense(1, activation='softmax')(x)
+
+# This creates a model that includes
+# the Input layer and three Dense layers
+model = Model(inputs=inputs, outputs=outputs)
+model.compile(optimizer='rmsprop',
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+
+''' Train & Test Network '''
+
+# (Assumptions: x_test = m x 180 matrix
+#    y_hat_mat, y_test_mat = mx20 matrix of predicted next 20 digits for each example)
+print(feature_mat.size)
+model.fit(feature_mat, y_train, batch_size=16, epochs=10)
+
+y_hat_mat = pred_action(x_test, n_pred, model)
+DecayW = np.repeat(2**(-np.array([range(1,n_pred)], dtype=float)), m, axis=0)
+
+score = np.sum((y_hat_mat == y_test_mat) * DecayW, axis=1)
