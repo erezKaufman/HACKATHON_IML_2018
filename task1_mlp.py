@@ -6,7 +6,6 @@ from keras.layers import Embedding
 from keras.layers import LSTM
 from keras.layers import Input, Dense
 from keras.models import Model
-
 from sklearn.neural_network import MLPClassifier
 
 class RawData:
@@ -115,20 +114,22 @@ def count_sums(x_index, perm_index, j, feature_mat,perm_length):
 #     df = pd.DataFrame(index=features,columns=x_set)
 #     print(df)
 
+print('Creating Datasets...k')
+k = 20
 if __name__ == '__main__':
-    class_data = RawData(sys.argv[1],181,70,20,10)
-    x_train, y_train = class_data.get_train(0,5)
-    x_test, y_test = class_data.get_test(0,5)
-    x_val, y_val = class_data.get_val(0,5)
+    class_data = RawData(sys.argv[1], k, 70, 20, 10)
+    x_train, y_train = class_data.get_train(0, k)
+    x_test, y_test = class_data.get_test(0, k)
+    x_val, y_val = class_data.get_val(0, k)
     # print(x_train)
     # print(x_train.shape)
     # print(y_train.shape)
-    feature_mat = create_features(x_train,5)
+    feature_mat = create_features(x_train, k)
     # create_dataFrame(x_train,features)
     # clf = MLPClassifier(solver='sgd',hidden_layer_sizes=(5,2))
     # clf.fit(x_train.astype('float64'),y_train.astype('float64'))
 
-# LSTM
+# Network
 def pred_action(x_test, n_pred, model):
     y_hat = np.zeros((m, n_pred))
     for i in range(n_pred):
@@ -152,15 +153,13 @@ n_layers = 10; n_units = 30; d = feature_mat.shape[1]
 #               optimizer='rmsprop',
 #               metrics=['accuracy'])
 
-
 inputs = Input(shape=(d,))
 x=inputs
 for i in range(n_layers):
     x = Dense(30, activation='relu')(x)
 outputs = Dense(1, activation='softmax')(x)
 
-# This creates a model that includes
-# the Input layer and three Dense layers
+print('Training...')
 model = Model(inputs=inputs, outputs=outputs)
 model.compile(optimizer='rmsprop',
               loss='binary_crossentropy',
@@ -170,7 +169,6 @@ model.compile(optimizer='rmsprop',
 
 # (Assumptions: x_test = m x 180 matrix
 #    y_hat_mat, y_test_mat = mx20 matrix of predicted next 20 digits for each example)
-print(feature_mat.size)
 model.fit(feature_mat, y_train, batch_size=16, epochs=10)
 
 y_hat_mat = pred_action(x_test, n_pred, model)
