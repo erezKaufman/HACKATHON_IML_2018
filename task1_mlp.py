@@ -87,19 +87,17 @@ def create_features(raw_x_set,k):
     permutaions_features = []
     sum_feature = [0]*(k+1)
     for perm_index, i in enumerate(permutaions):
-
+        cur_count = 0
         for x_index, j in enumerate(raw_x_set):
-            cur_count = 0
-            chunks = [j[i:i + k] for i in range(0, len(i), k)]
-            for chunk in chunks:
-                if i ==chunk:cur_count+=1
-            feature_mat[x_index][perm_index] = cur_count
+            if i in j: cur_count = j[0].count(i)
+
+
+
             if perm_index == 0:
                 count_sums(x_index,perm_index, j, feature_mat,len(permutaions))
 
-        # permutaions_features.append(cur_count)
+            feature_mat[x_index][perm_index] = cur_count
     # print(permutaions_features)
-    print(feature_mat)
     return np.asarray(permutaions_features+sum_feature)
 
 def count_sums(x_index, perm_index, j, feature_mat,perm_length):
