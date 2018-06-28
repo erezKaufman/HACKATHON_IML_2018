@@ -49,14 +49,19 @@ class RawData:
 
 
 
-# def create_features(x_set)
+def call_decision_tree(x_set,y_set):
+    clf = tree.DecisionTreeClassifier
+    clf.fit(x_set,y_set)
+    return clf
 
 if __name__ == '__main__':
     class_data = RawData(sys.argv[1],21,70,20,10)
     x_train, y_train = class_data.get_train()
     x_test, y_test = class_data.get_test()
     x_val, y_val = class_data.get_val()
-    print(x_train.shape)
-    print(x_test.shape)
-    print(x_val.shape)
 
+    clf = call_decision_tree(x_train,y_train)
+
+    y_hat = clf.predict(x_test)
+
+    mask = y_test == y_hat
