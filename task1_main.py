@@ -63,6 +63,19 @@ if __name__ == '__main__':
     x_val, y_val = class_data.get_val()
 
 
+# Decision Tree
+
+''' Create Features '''
+# x_train = mx20
+
+# def CreateFeatures(X, num_features):
+#     m = X.shape[0]
+#     X_feat = np.zeros((m, num_features))
+#
+#     X_feat[:, 0] = np.sum(X[:,-7:], axis=1) # sum last 7
+#     X_feat[:, 1] =  # num. repeated digits
+#     X_feat[:, 2] = np.mean(X, axis=1) # average
+#     X_feat[:, 3] =
 
 # LSTM
 def pred_action(x_test, n_pred, model):
@@ -77,10 +90,15 @@ def pred_action(x_test, n_pred, model):
 max_features = 1024; m = x_test.shape[0]; n_pred = 20
 
 ''' Create LSTM Network '''
-model = Sequential()
-model.add(Embedding(max_features, output_dim=256))
-model.add(LSTM(128))
-model.add(Dropout(0.5))
+
+# model.add(Embedding(max_features, output_dim=256))
+# model.add(LSTM(128))
+# model.add(Dropout(0.5))
+
+n_layers = 10; n_units = 30
+model = Sequential(Dense(n_units, input_shape=(feature_mat.shape[1]), activation='relu'))
+for i in range(n_layers):
+    model.add(Dense(n_units, activation='relu'))
 model.add(Dense(1, activation='sigmoid'))
 
 model.compile(loss='binary_crossentropy',
@@ -92,10 +110,9 @@ model.compile(loss='binary_crossentropy',
 # (Assumptions: x_test = m x 180 matrix
 #    y_hat_mat, y_test_mat = mx20 matrix of predicted next 20 digits for each example)
 
-model.fit(x_train, y_train, batch_size=16, epochs=10)
+model.fit(feature_mat, y_train, batch_size=16, epochs=10)
 
 y_hat_mat = pred_action(x_test, n_pred, model)
 DecayW = np.repeat(2**(-np.array([range(1,n_pred)], dtype=float)), m, axis=0)
 
 score = np.sum((y_hat_mat == y_test_mat) * DecayW, axis=1)
-
