@@ -55,4 +55,4 @@ model.compile(loss='binary_crossentropy',
 ''' Train Network '''
 model.fit(x_train, y_train, batch_size=16, epochs=10)
 
-y_hat = model.predict(x_test, y_test, batch_size=16)
+y_hat = model.predict(x_test, y_test)
