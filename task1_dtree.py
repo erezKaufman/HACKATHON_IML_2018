@@ -1,4 +1,6 @@
-
+from sklearn import tree
+import numpy as np
+import sys
 class RawData:
 
     def __init__(self,fileName,fixed_size,trainSize,testSize,valSize):
@@ -22,8 +24,8 @@ class RawData:
         number_for_val = round(origin_length*(valSize/100))
         random_data = np.random.permutation(self._rawData)
         self._raw_train = random_data[0:number_for_train]
-        self._raw_test = random_data[number_for_train:number_for_test]
-        self._raw_val = random_data[number_for_test:number_for_val]
+        self._raw_test = random_data[number_for_train:number_for_train+number_for_test]
+        self._raw_val = random_data[number_for_train+number_for_test:-1]
 
 
     def get_train(self):
@@ -31,27 +33,30 @@ class RawData:
         x_train = [x[:-1] for x in self._raw_train]
         y_train = self._raw_train[:][-1]
         print(len(y_train[0]))
-        return x_train,y_train
+        return np.asarray(x_train),np.asarray(y_train)
 
     def get_test(self):
         x_test = [x[:-1] for x in self._raw_test]
         y_test = self._raw_test[:][-1]
         print(len(y_test[0]))
-        return x_test,y_test
+        return np.asarray(x_test),np.asarray(y_test)
 
     def get_val(self):
         x_val = [x[:-1] for x in self._raw_val]
         y_val = self._raw_val[:][-1]
         print(len(y_val[0]))
-        return x_val, y_val
+        return np.asarray(x_val), np.asarray(y_val)
 
 
 
+# def create_features(x_set)
 
 if __name__ == '__main__':
-    class_data = RawData(sys.argv[1],181,70,20,10)
+    class_data = RawData(sys.argv[1],21,70,20,10)
     x_train, y_train = class_data.get_train()
     x_test, y_test = class_data.get_test()
     x_val, y_val = class_data.get_val()
+    print(x_train.shape)
+    print(x_test.shape)
+    print(x_val.shape)
 
-    
