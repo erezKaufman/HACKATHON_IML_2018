@@ -93,7 +93,7 @@ def create_features(raw_x_set,k):
             count_sums(index, j, sum_feature)
 
         permutaions_features.append(cur_count)
-
+    #
     return np.asarray(permutaions_features+sum_feature)
 
 def count_sums(index, j, sum_feature):
