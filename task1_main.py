@@ -46,7 +46,7 @@ model = Sequential()
 model.add(Embedding(max_features, output_dim=256))
 model.add(LSTM(128))
 model.add(Dropout(0.5))
-model.add(Dense(1, activation='hard_sigmoid'))
+model.add(Dense(1, activation='sigmoid'))
 
 model.compile(loss='binary_crossentropy',
               optimizer='rmsprop',
@@ -55,5 +55,17 @@ model.compile(loss='binary_crossentropy',
 ''' Train Network '''
 model.fit(x_train, y_train, batch_size=16, epochs=10)
 
-y_hat = model.predict(x_test, y_test)
-..
+'''x_test = m x 180 matrix
+   y_hat = mx20 matrix of predicted next 20 digits for each example'''
+m = x_test.shape[0]; n_pred = 20
+
+def pred_action(x_test, n_pred, model):
+    y_hat = np.zeros((m, n_pred))
+    for i in range(n_pred):
+        y_hat[:, i] = round(model.predict(x_test))
+
+        x_test = np.append(x_test[:, 1:], y_hat[:,i], axis=1)
+
+    return y_hat
+
+y_hat_mat = pred_action(x_test, n_pred, model)
