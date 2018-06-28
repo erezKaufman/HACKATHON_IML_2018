@@ -31,8 +31,6 @@ class RawData:
         # 10 percents
         pass
 
-
-
 if __name__ == '__main__':
     class_data = RawData(sys.argv[1])
     class_data.parseFile()
@@ -61,10 +59,11 @@ model.compile(loss='binary_crossentropy',
               optimizer='rmsprop',
               metrics=['accuracy'])
 
-''' Train & Test Network 
+''' Train & Test Network '''
 
-Assumptions: x_test = m x 180 matrix
-   y_hat_mat, y_test_mat = mx20 matrix of predicted next 20 digits for each example'''
+# (Assumptions:
+#   x_test = m x 180 matrix
+#   y_hat_mat, y_test_mat = mx20 matrix of predicted next 20 digits for each example)
 
 model.fit(x_train, y_train, batch_size=16, epochs=10)
 
