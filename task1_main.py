@@ -1,10 +1,10 @@
 # from sklearn.neural_network import MLPClassifier
 import sys
 import numpy as np
-# from keras.models import Sequential
-# from keras.layers import Dense, Dropout
-# from keras.layers import Embedding
-# from keras.layers import LSTM
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
+from keras.layers import Embedding
+from keras.layers import LSTM
 
 
 class RawData:
