@@ -82,26 +82,29 @@ def create_permutations(k):
 
 def create_features(raw_x_set,k):
     permutaions =  create_permutations(k)
+    feature_mat = np.zeros((len(raw_x_set),len(permutaions)+k+1))
+    # print(feature_mat.shape)
     permutaions_features = []
     sum_feature = [0]*(k+1)
-    for index, i in enumerate(permutaions):
+    for perm_index, i in enumerate(permutaions):
         cur_count = 0
-        for j in raw_x_set:
+        for x_index, j in enumerate(raw_x_set):
             if i in j:
 
                 cur_count=1
-            count_sums(index, j, sum_feature)
+            if perm_index == 0:
+                count_sums(x_index,perm_index, j, feature_mat)
 
         permutaions_features.append(cur_count)
-    #
+    # print(permutaions_features)
     return np.asarray(permutaions_features+sum_feature)
 
-def count_sums(index, j, sum_feature):
-    if index == 0:
-        count = 0
-        for bit in j[0]:
-            if bit == '1': count += 1
-        sum_feature[count] += 1
+def count_sums(x_index, perm_index, j, feature_mat):
+    count = 0
+    for bit in j[0]:
+        if bit == '1': count += 1
+
+    feature_mat[x_index][] += 1
 
 # def create_dataFrame(x_set,features):
 #     df = pd.DataFrame(index=features,columns=x_set)
@@ -112,7 +115,7 @@ if __name__ == '__main__':
     x_train, y_train = class_data.get_train(0,5)
     x_test, y_test = class_data.get_test(0,5)
     x_val, y_val = class_data.get_val(0,5)
-    print(x_train)
+    # print(x_train)
     # print(x_train.shape)
     # print(y_train.shape)
     features = create_features(x_train,5)
