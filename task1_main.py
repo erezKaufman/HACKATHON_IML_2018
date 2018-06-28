@@ -1,10 +1,10 @@
 # from sklearn.neural_network import MLPClassifier
 import sys
 import numpy as np
-# from keras.models import Sequential
-# from keras.layers import Dense, Dropout
-# from keras.layers import Embedding
-# from keras.layers import LSTM
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
+from keras.layers import Embedding
+from keras.layers import LSTM
 
 
 class RawData:
@@ -41,13 +41,13 @@ class RawData:
         print(len(y_train[0]))
         return x_train,y_train
 
-    def createTestData(self):
+    def get_test(self):
         x_test = [x[:-1] for x in self._raw_test]
         y_test = self._raw_test[:][-1]
         print(len(y_test[0]))
         return x_test,y_test
 
-    def createValData(self):
+    def get_val(self):
         x_val = [x[:-1] for x in self._raw_val]
         y_val = self._raw_val[:][-1]
         print(len(y_val[0]))
@@ -59,7 +59,8 @@ class RawData:
 if __name__ == '__main__':
     class_data = RawData(sys.argv[1],181,70,20,10)
     x_train, y_train = class_data.get_train()
-
+    x_test, y_test = class_data.get_test()
+    x_val, y_val = class_data.get_val()
     # class_data.parseFile(181)
     # print(class_data.create_sets_of_fix_size(181))
 
