@@ -1,6 +1,11 @@
-from sklearn.neural_network import MLPClassifier
+# from sklearn.neural_network import MLPClassifier
 import sys
 import numpy as np
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
+from keras.layers import Embedding
+from keras.layers import LSTM
+
 
 class RawData:
 
@@ -31,3 +36,23 @@ class RawData:
 if __name__ == '__main__':
     class_data = RawData(sys.argv[1])
     class_data.parseFile()
+
+
+# LSTM
+max_features = 1024
+
+''' Create LSTM Network '''
+model = Sequential()
+model.add(Embedding(max_features, output_dim=256))
+model.add(LSTM(128))
+model.add(Dropout(0.5))
+model.add(Dense(1, activation='hard_sigmoid'))
+
+model.compile(loss='binary_crossentropy',
+              optimizer='rmsprop',
+              metrics=['accuracy'])
+
+''' Train Network '''
+model.fit(x_train, y_train, batch_size=16, epochs=10)
+
+y_hat = model.predict(x_test, y_test, batch_size=16)
