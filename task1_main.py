@@ -39,7 +39,16 @@ if __name__ == '__main__':
 
 
 # LSTM
-max_features = 1024
+def pred_action(x_test, n_pred, model):
+    y_hat = np.zeros((m, n_pred))
+    for i in range(n_pred):
+        y_hat[:, i] = round(model.predict(x_test))
+
+        x_test = np.append(x_test[:, 1:], y_hat[:,i], axis=1)
+
+    return y_hat
+
+max_features = 1024; m = x_test.shape[0]; n_pred = 20
 
 ''' Create LSTM Network '''
 model = Sequential()
@@ -52,20 +61,15 @@ model.compile(loss='binary_crossentropy',
               optimizer='rmsprop',
               metrics=['accuracy'])
 
-''' Train Network '''
+''' Train & Test Network 
+
+Assumptions: x_test = m x 180 matrix
+   y_hat_mat, y_test_mat = mx20 matrix of predicted next 20 digits for each example'''
+
 model.fit(x_train, y_train, batch_size=16, epochs=10)
 
-'''x_test = m x 180 matrix
-   y_hat = mx20 matrix of predicted next 20 digits for each example'''
-m = x_test.shape[0]; n_pred = 20
-
-def pred_action(x_test, n_pred, model):
-    y_hat = np.zeros((m, n_pred))
-    for i in range(n_pred):
-        y_hat[:, i] = round(model.predict(x_test))
-
-        x_test = np.append(x_test[:, 1:], y_hat[:,i], axis=1)
-
-    return y_hat
-
 y_hat_mat = pred_action(x_test, n_pred, model)
+DecayW = np.repeat(2**(-np.array([range(1,n_pred)], dtype=float)), m, axis=0)
+
+score = np.sum((y_hat_mat == y_test_mat) * DecayW, axis=1)
+
